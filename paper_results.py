@@ -4,7 +4,7 @@ plot_energy_lora.py
 Publication-quality figures for the 2² Partial Factorial Analysis of
 LoRA fine-tuning energy consumption on three GPU platforms.
 
-ACM SIGCOMM / NSDI style — font size 16, serif typography, 300 DPI PDF.
+ACM SIGCOMM / NSDI style — font size 16, serif typography, 300 DPI png.
 
 Directory structure expected
 -----------------------------
@@ -449,7 +449,7 @@ for gpu, resp_dict in factorial_data.items():
                             color=color, fontweight="bold")
             ax.legend(loc="best", frameon=True, fontsize=SMALL_FONT - 1)
 
-        save(fig, f"fig01_main_effects_{safe_name(gpu + '_' + resp)}.pdf")
+        save(fig, f"fig01_main_effects_{safe_name(gpu + '_' + resp)}.png")
 
 
 # ══════════════════════════════════════════════════════════════════
@@ -475,7 +475,7 @@ for gpu, resp_dict in factorial_data.items():
         ax.set_ylabel(resp)
         ax.set_title(f"Interaction Plot — {resp}  [{gpu}]", fontweight="bold")
         ax.legend(title=FACTOR_A_LABEL, frameon=True)
-        save(fig, f"fig02_interaction_{safe_name(gpu + '_' + resp)}.pdf")
+        save(fig, f"fig02_interaction_{safe_name(gpu + '_' + resp)}.png")
 
 
 # ══════════════════════════════════════════════════════════════════
@@ -527,7 +527,7 @@ if not df_fact.empty:
         ax.legend(loc="upper center", bbox_to_anchor=(0.5, 1.12),
                   frameon=True, ncol=3, fontsize=SMALL_FONT - 2)
         
-        save(fig, f"fig03_influence_{safe_name(gpu)}.pdf")
+        save(fig, f"fig03_influence_{safe_name(gpu)}.png")
 
 
 # ══════════════════════════════════════════════════════════════════
@@ -575,7 +575,7 @@ if not df_fact.empty:
         ax.legend(loc="upper center", bbox_to_anchor=(0.5, 1.12),
                   frameon=True, ncol=3, fontsize=SMALL_FONT - 2)
         
-        save(fig, f"fig04_influence_xgpu_{safe_name(resp)}.pdf")
+        save(fig, f"fig04_influence_xgpu_{safe_name(resp)}.png")
 
 
 # ══════════════════════════════════════════════════════════════════
@@ -603,7 +603,7 @@ if not df_em.empty:
     ax.set_ylabel("Average GPU Power (W)")
     ax.set_title("Average GPU Power per Configuration and GPU", fontweight="bold")
     ax.legend(frameon=True, ncol=3)
-    save(fig, "fig05_gpu_power_all.pdf")
+    save(fig, "fig05_gpu_power_all.png")
 
 
 # ══════════════════════════════════════════════════════════════════
@@ -627,7 +627,7 @@ if not df_em.empty:
     ax.set_ylabel("Energy Consumed (kWh)")
     ax.set_title("Energy Consumed per Configuration and GPU", fontweight="bold")
     ax.legend(frameon=True, ncol=3)
-    save(fig, "fig06_energy_consumed_all.pdf")
+    save(fig, "fig06_energy_consumed_all.png")
 
 
 # ══════════════════════════════════════════════════════════════════
@@ -651,7 +651,7 @@ if not df_em.empty:
     ax.set_ylabel("CO₂ Emissions (kg CO₂eq)")
     ax.set_title("CO₂ Emissions per Configuration and GPU", fontweight="bold")
     ax.legend(frameon=True, ncol=3)
-    save(fig, "fig07_co2_emissions_all.pdf")
+    save(fig, "fig07_co2_emissions_all.png")
 
 
 # ══════════════════════════════════════════════════════════════════
@@ -705,7 +705,7 @@ if not df_acc_all.empty and not df_em.empty:
 
     # Ajusta o layout para que o título e a legenda não cortem
     plt.tight_layout(rect=[0, 0.08, 1, 0.95])
-    save(fig, "fig08_accuracy_vs_energy.pdf", tight=False)
+    save(fig, "fig08_accuracy_vs_energy.png", tight=False)
 
 
 # ══════════════════════════════════════════════════════════════════
@@ -752,7 +752,7 @@ if not df_acc_all.empty:
 
     fig.suptitle("Top-k Accuracy Profile per GPU and Configuration",
                  fontweight="bold", y=1.02)
-    save(fig, "fig09_topk_accuracy_profile.pdf")
+    save(fig, "fig09_topk_accuracy_profile.png")
 
 
 # ══════════════════════════════════════════════════════════════════
@@ -808,7 +808,7 @@ if not df_f1_all.empty:
 
         # Ajuste para evitar que a legenda e os rótulos do eixo X se sobreponham
         plt.tight_layout(rect=[0, 0.1, 1, 0.95])
-        save(fig, "fig10_f1_score_profile.pdf", tight=False)
+        save(fig, "fig10_f1_score_profile.png", tight=False)
 
 
 # ══════════════════════════════════════════════════════════════════
@@ -891,7 +891,7 @@ if not df_fact.empty:
     fig.suptitle("Factorial Analysis — Factor Influence Heatmap", 
                  fontweight="bold", y=0.98, fontsize=TITLE_FONT)
 
-    save(fig, "fig11_factorial_heatmap.pdf", tight=False)
+    save(fig, "fig11_factorial_heatmap.png", tight=False)
 
 
 # ══════════════════════════════════════════════════════════════════
@@ -915,7 +915,7 @@ if not df_em.empty:
     ax.set_ylabel("Training Duration (min)")
     ax.set_title("Training Duration per Configuration and GPU", fontweight="bold")
     ax.legend(frameon=True, ncol=3)
-    save(fig, "fig12_training_duration.pdf")
+    save(fig, "fig12_training_duration.png")
 
 
 # ══════════════════════════════════════════════════════════════════
@@ -953,7 +953,7 @@ if not df_acc_all.empty and not df_em.empty:
 
     fig.suptitle("Energy Efficiency: Top-1 Accuracy per kWh",
                  fontweight="bold", y=1.02)
-    save(fig, "fig13_energy_efficiency.pdf")
+    save(fig, "fig13_energy_efficiency.png")
 
 
 # ══════════════════════════════════════════════════════════════════
@@ -1033,7 +1033,7 @@ if not df_acc_all.empty and not df_em.empty:
                      fontweight="bold", pad=18)
         ax.legend(loc="lower center", bbox_to_anchor=(0.5, -0.20),
                   ncol=2, frameon=True, fontsize=SMALL_FONT - 2)
-        save(fig, f"fig14_radar_{safe_name(gpu)}.pdf")
+        save(fig, f"fig14_radar_{safe_name(gpu)}.png")
 
 
 # ══════════════════════════════════════════════════════════════════
@@ -1067,11 +1067,11 @@ if not df_fact.empty:
         ax.set_ylabel(resp)
         ax.set_title(f"Experimental Response Values — {resp}", fontweight="bold")
         ax.legend(frameon=True)
-        save(fig, f"fig15_response_values_{safe_name(resp)}.pdf")
+        save(fig, f"fig15_response_values_{safe_name(resp)}.png")
 
 
 # ══════════════════════════════════════════════════════════════════
-print(f"\n✅  All figures saved to '{OUT_DIR}/'  (300 DPI PDF, LaTeX-ready)")
+print(f"\n✅  All figures saved to '{OUT_DIR}/'  (300 DPI png, LaTeX-ready)")
 print("   15 figure slots — some generate multiple files (one per GPU or response).")
 print("\n   ⚠  Remember to fill in factorial_data for A40 and RTX6000,")
 print("      and for Energy Consumed + Emissions response variables.")
