@@ -951,8 +951,8 @@ if not df_acc_all.empty and not df_em.empty:
         #    ax.set_ylabel("Top-1 Accuracy (%) per kWh")
         #ax.set_title(gpu, fontweight="bold")
 
-    fig.suptitle("Energy Efficiency: Top-1 Accuracy per kWh",
-                 fontweight="bold", y=1.02)
+    #fig.suptitle("Energy Efficiency: Top-1 Accuracy per kWh",
+    #             fontweight="bold", y=1.02)
     save(fig, "fig13_energy_efficiency.pdf")
 
 
