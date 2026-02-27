@@ -449,7 +449,7 @@ for gpu, resp_dict in factorial_data.items():
                             color=color, fontweight="bold")
             ax.legend(loc="best", frameon=True, fontsize=SMALL_FONT - 1)
 
-        save(fig, f"fig01_main_effects_{safe_name(gpu + '_' + resp)}.png")
+        save(fig, f"fig01_main_effects_{safe_name(gpu + '_' + resp)}.pdf")
 
 
 # ══════════════════════════════════════════════════════════════════
@@ -473,9 +473,9 @@ for gpu, resp_dict in factorial_data.items():
 
         ax.set_xlabel(FACTOR_B_LABEL)
         ax.set_ylabel(resp)
-        ax.set_title(f"Interaction Plot — {resp}  [{gpu}]", fontweight="bold")
+        #ax.set_title(f"Interaction Plot — {resp}  [{gpu}]", fontweight="bold")
         ax.legend(title=FACTOR_A_LABEL, frameon=True)
-        save(fig, f"fig02_interaction_{safe_name(gpu + '_' + resp)}.png")
+        save(fig, f"fig02_interaction_{safe_name(gpu + '_' + resp)}.pdf")
 
 
 # ══════════════════════════════════════════════════════════════════
@@ -520,14 +520,14 @@ if not df_fact.empty:
         ax.set_ylabel("Contribution (%)")
         ax.set_ylim(0, 120) 
         
-        ax.set_title(f"Factor Influence on Response Variables — {gpu}", 
-                     fontweight="bold", pad=35) 
+        #ax.set_title(f"Factor Influence on Response Variables — {gpu}", 
+        #             fontweight="bold", pad=35) 
 
         # Legenda no topo, centralizada e fora do eixo
         ax.legend(loc="upper center", bbox_to_anchor=(0.5, 1.12),
                   frameon=True, ncol=3, fontsize=SMALL_FONT - 2)
         
-        save(fig, f"fig03_influence_{safe_name(gpu)}.png")
+        save(fig, f"fig03_influence_{safe_name(gpu)}.pdf")
 
 
 # ══════════════════════════════════════════════════════════════════
@@ -568,14 +568,14 @@ if not df_fact.empty:
         ax.set_ylabel("Contribution (%)")
         ax.set_ylim(0, 125) # Extra headroom for the labels and legend
         
-        ax.set_title(f"Factor Influence Across GPUs — {resp}", 
-                     fontweight="bold", pad=35)
+        #ax.set_title(f"Factor Influence Across GPUs — {resp}", 
+        #             fontweight="bold", pad=35)
 
         # Legend moved to top center to match Figure 3
         ax.legend(loc="upper center", bbox_to_anchor=(0.5, 1.12),
                   frameon=True, ncol=3, fontsize=SMALL_FONT - 2)
         
-        save(fig, f"fig04_influence_xgpu_{safe_name(resp)}.png")
+        save(fig, f"fig04_influence_xgpu_{safe_name(resp)}.pdf")
 
 
 # ══════════════════════════════════════════════════════════════════
@@ -601,9 +601,9 @@ if not df_em.empty:
     ax.set_xticklabels([cfg_label(m, s) for m, s in CONFIGS_ORDER],
                        fontsize=SMALL_FONT, rotation=12, ha="right")
     ax.set_ylabel("Average GPU Power (W)")
-    ax.set_title("Average GPU Power per Configuration and GPU", fontweight="bold")
+    #ax.set_title("Average GPU Power per Configuration and GPU", fontweight="bold")
     ax.legend(frameon=True, ncol=3)
-    save(fig, "fig05_gpu_power_all.png")
+    save(fig, "fig05_gpu_power_all.pdf")
 
 
 # ══════════════════════════════════════════════════════════════════
@@ -625,9 +625,9 @@ if not df_em.empty:
     ax.set_xticklabels([cfg_label(m, s) for m, s in CONFIGS_ORDER],
                        fontsize=SMALL_FONT, rotation=12, ha="right")
     ax.set_ylabel("Energy Consumed (kWh)")
-    ax.set_title("Energy Consumed per Configuration and GPU", fontweight="bold")
+    #ax.set_title("Energy Consumed per Configuration and GPU", fontweight="bold")
     ax.legend(frameon=True, ncol=3)
-    save(fig, "fig06_energy_consumed_all.png")
+    save(fig, "fig06_energy_consumed_all.pdf")
 
 
 # ══════════════════════════════════════════════════════════════════
@@ -649,9 +649,9 @@ if not df_em.empty:
     ax.set_xticklabels([cfg_label(m, s) for m, s in CONFIGS_ORDER],
                        fontsize=SMALL_FONT, rotation=12, ha="right")
     ax.set_ylabel("CO₂ Emissions (kg CO₂eq)")
-    ax.set_title("CO₂ Emissions per Configuration and GPU", fontweight="bold")
+    #ax.set_title("CO₂ Emissions per Configuration and GPU", fontweight="bold")
     ax.legend(frameon=True, ncol=3)
-    save(fig, "fig07_co2_emissions_all.png")
+    save(fig, "fig07_co2_emissions_all.pdf")
 
 
 # ══════════════════════════════════════════════════════════════════
@@ -684,11 +684,11 @@ if not df_acc_all.empty and not df_em.empty:
         ax.set_xlabel("Energy Consumed (kWh)", labelpad=12)
         if ax is axes[0]:
             ax.set_ylabel("Top-1 Accuracy (%)", labelpad=12)
-        ax.set_title(f"GPU: {gpu}", fontweight="bold", pad=15)
+        #ax.set_title(f"GPU: {gpu}", fontweight="bold", pad=15)
         ax.grid(True, linestyle='--', alpha=0.6)
 
-    fig.suptitle("Trade-off: Top-1 Accuracy vs. Energy Consumed", 
-                 fontweight="bold", y=0.98, fontsize=TITLE_FONT)
+    #fig.suptitle("Trade-off: Top-1 Accuracy vs. Energy Consumed", 
+    #             fontweight="bold", y=0.98, fontsize=TITLE_FONT)
     
     # Criando a legenda global na parte inferior
     from matplotlib.lines import Line2D
@@ -705,7 +705,7 @@ if not df_acc_all.empty and not df_em.empty:
 
     # Ajusta o layout para que o título e a legenda não cortem
     plt.tight_layout(rect=[0, 0.08, 1, 0.95])
-    save(fig, "fig08_accuracy_vs_energy.png", tight=False)
+    save(fig, "fig08_accuracy_vs_energy.pdf", tight=False)
 
 
 # ══════════════════════════════════════════════════════════════════
@@ -750,9 +750,9 @@ if not df_acc_all.empty:
         ax.legend(loc="lower right", frameon=True, ncol=2,
                   fontsize=SMALL_FONT - 2)
 
-    fig.suptitle("Top-k Accuracy Profile per GPU and Configuration",
-                 fontweight="bold", y=1.02)
-    save(fig, "fig09_topk_accuracy_profile.png")
+    #fig.suptitle("Top-k Accuracy Profile per GPU and Configuration",
+    #             fontweight="bold", y=1.02)
+    save(fig, "fig09_topk_accuracy_profile.pdf")
 
 
 # ══════════════════════════════════════════════════════════════════
@@ -795,10 +795,10 @@ if not df_f1_all.empty:
                                fontsize=SMALL_FONT - 2, rotation=15, ha="right")
             if ax is axes[0]:
                 ax.set_ylabel("F1-Score (%)", labelpad=10)
-            ax.set_title(f"GPU: {gpu}", fontweight="bold", pad=15)
+            #ax.set_title(f"GPU: {gpu}", fontweight="bold", pad=15)
 
-        fig.suptitle("F1-Score, Precision and Recall per GPU and Configuration",
-                     fontweight="bold", y=0.98, fontsize=TITLE_FONT)
+        #fig.suptitle("F1-Score, Precision and Recall per GPU and Configuration",
+        #             fontweight="bold", y=0.98, fontsize=TITLE_FONT)
         
         # ── LEGENDA GLOBAL INFERIOR ──
         handles, labels = axes[0].get_legend_handles_labels()
@@ -808,7 +808,7 @@ if not df_f1_all.empty:
 
         # Ajuste para evitar que a legenda e os rótulos do eixo X se sobreponham
         plt.tight_layout(rect=[0, 0.1, 1, 0.95])
-        save(fig, "fig10_f1_score_profile.png", tight=False)
+        save(fig, "fig10_f1_score_profile.pdf", tight=False)
 
 
 # ══════════════════════════════════════════════════════════════════
@@ -866,7 +866,7 @@ if not df_fact.empty:
         else:
             ax.set_yticklabels([])
 
-        ax.set_title(f"GPU: {gpu}", fontweight="bold", pad=20)
+        #ax.set_title(f"GPU: {gpu}", fontweight="bold", pad=20)
         
         # Remove molduras e grades que podem cobrir o heatmap
         ax.spines[:].set_visible(False)
@@ -888,10 +888,10 @@ if not df_fact.empty:
         cbar = fig.colorbar(im_ref, cax=cbar_ax)
         cbar.set_label("Influence (%)", fontsize=SMALL_FONT)
 
-    fig.suptitle("Factorial Analysis — Factor Influence Heatmap", 
-                 fontweight="bold", y=0.98, fontsize=TITLE_FONT)
+    #fig.suptitle("Factorial Analysis — Factor Influence Heatmap", 
+    #             fontweight="bold", y=0.98, fontsize=TITLE_FONT)
 
-    save(fig, "fig11_factorial_heatmap.png", tight=False)
+    save(fig, "fig11_factorial_heatmap.pdf", tight=False)
 
 
 # ══════════════════════════════════════════════════════════════════
@@ -913,9 +913,9 @@ if not df_em.empty:
     ax.set_xticklabels([cfg_label(m, s) for m, s in CONFIGS_ORDER],
                        fontsize=SMALL_FONT, rotation=12, ha="right")
     ax.set_ylabel("Training Duration (min)")
-    ax.set_title("Training Duration per Configuration and GPU", fontweight="bold")
+    #ax.set_title("Training Duration per Configuration and GPU", fontweight="bold")
     ax.legend(frameon=True, ncol=3)
-    save(fig, "fig12_training_duration.png")
+    save(fig, "fig12_training_duration.pdf")
 
 
 # ══════════════════════════════════════════════════════════════════
@@ -947,13 +947,13 @@ if not df_acc_all.empty and not df_em.empty:
         ax.set_xticks(x_loc)
         ax.set_xticklabels(labels, fontsize=SMALL_FONT - 2,
                            rotation=15, ha="right")
-        if ax is axes[0]:
-            ax.set_ylabel("Top-1 Accuracy (%) per kWh")
-        ax.set_title(gpu, fontweight="bold")
+        #if ax is axes[0]:
+        #    ax.set_ylabel("Top-1 Accuracy (%) per kWh")
+        #ax.set_title(gpu, fontweight="bold")
 
     fig.suptitle("Energy Efficiency: Top-1 Accuracy per kWh",
                  fontweight="bold", y=1.02)
-    save(fig, "fig13_energy_efficiency.png")
+    save(fig, "fig13_energy_efficiency.pdf")
 
 
 # ══════════════════════════════════════════════════════════════════
@@ -1029,11 +1029,10 @@ if not df_acc_all.empty and not df_em.empty:
         ax.set_yticks([0.25, 0.5, 0.75, 1.0])
         ax.set_yticklabels(["0.25", "0.50", "0.75", "1.00"],
                            fontsize=SMALL_FONT - 3, color=CGRAY)
-        ax.set_title(f"Multi-Metric Overview — {gpu}",
-                     fontweight="bold", pad=18)
+        #ax.set_title(f"Multi-Metric Overview — {gpu}", fontweight="bold", pad=18)
         ax.legend(loc="lower center", bbox_to_anchor=(0.5, -0.20),
                   ncol=2, frameon=True, fontsize=SMALL_FONT - 2)
-        save(fig, f"fig14_radar_{safe_name(gpu)}.png")
+        save(fig, f"fig14_radar_{safe_name(gpu)}.pdf")
 
 
 # ══════════════════════════════════════════════════════════════════
@@ -1065,9 +1064,9 @@ if not df_fact.empty:
 
         ax.set_xlabel("Experiment Configuration")
         ax.set_ylabel(resp)
-        ax.set_title(f"Experimental Response Values — {resp}", fontweight="bold")
+        #ax.set_title(f"Experimental Response Values — {resp}", fontweight="bold")
         ax.legend(frameon=True)
-        save(fig, f"fig15_response_values_{safe_name(resp)}.png")
+        save(fig, f"fig15_response_values_{safe_name(resp)}.pdf")
 
 
 # ══════════════════════════════════════════════════════════════════
