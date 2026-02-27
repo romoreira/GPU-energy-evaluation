@@ -159,6 +159,51 @@ def add_bar_labels(ax, bars, fmt="{:.3f}", fontsize=SMALL_FONT - 1,
 
 
 # ══════════════════════════════════════════════════════════════════
+# HELPER FUNCTION — UPDATED FOR BBOX TEXT (LEGIBILITY FIXED)
+# ══════════════════════════════════════════════════════════════════
+def add_bar_labels(ax, bars, fmt="{:.3f}", fontsize=SMALL_FONT - 1,
+                    pad_frac=0.015, color_inside="white", threshold_frac=0.55,
+                    with_bbox=False):
+    """
+    Adiciona rótulos de texto às barras.
+    
+    Novos parâmetros:
+    - with_bbox (bool): Se True, desenha uma caixa de texto com fundo branco
+                        e borda transparente ao redor de cada rótulo para
+                        garantir a legibilidade.
+    """
+    ymax = max((b.get_height() for b in bars), default=1) or 1
+    
+    # Configuração da caixa de texto (bbox)
+    bbox_props = None
+    if with_bbox:
+        bbox_props = dict(
+            boxstyle="round,pad=0.2", # Estilo da caixa (arredondada, com preenchimento)
+            facecolor="white",        # Cor de fundo da caixa
+            edgecolor="none",         # Cor da borda da caixa (transparente)
+            alpha=0.85                # Opacidade da caixa (levemente transparente para ver o fundo)
+        )
+        
+    for bar in bars:
+        h = bar.get_height()
+        if h == 0:
+            continue
+            
+        # Determina se o texto fica dentro ou acima da barra com base no limiar
+        inside = h / ymax > threshold_frac
+        ypos   = h / 2      if inside else h + ymax * pad_frac
+        va     = "center"   if inside else "bottom"
+        
+        # Cor do texto (preto se with_bbox=True para consistência)
+        text_color = "black" if with_bbox else (color_inside if inside else "#222")
+        
+        # Adiciona o texto ao gráfico com a configuração da bbox
+        ax.text(bar.get_x() + bar.get_width() / 2, ypos,
+                fmt.format(h), ha="center", va=va,
+                fontsize=fontsize, color=text_color,
+                bbox=bbox_props) # Aplica a bbox aqui
+
+# ══════════════════════════════════════════════════════════════════
 # 1.  DATA LOADING
 # ══════════════════════════════════════════════════════════════════
 
@@ -434,7 +479,7 @@ for gpu, resp_dict in factorial_data.items():
 
 
 # ══════════════════════════════════════════════════════════════════
-# FIGURE 3 — Factor Influence (% contribution) per GPU
+# FIGURE 3 — Factor Influence (% contribution) per GPU (BBOX TEXT FIXED)
 # ══════════════════════════════════════════════════════════════════
 print("[Fig 3] Factor Influence per GPU …")
 
@@ -443,37 +488,50 @@ if not df_fact.empty:
         sub = df_fact[df_fact.gpu == gpu]
         if sub.empty:
             continue
+            
         responses = sub["response"].tolist()
         infA  = sub["infA"].values  * 100
         infB  = sub["infB"].values  * 100
         infAB = sub["infAB"].values * 100
 
-        fig, ax = plt.subplots(figsize=(max(7, len(responses) * 2.8), 5.2))
+        # Mantendo o tamanho maior para o layout limpo
+        fig, ax = plt.subplots(figsize=(10, 6)) 
         x = np.arange(len(responses))
-        w = 0.26
+        w = 0.25
 
-        b1 = ax.bar(x - w, infA,  w, label=f"Factor A — {FACTOR_A_LABEL}",
-                    color=C_135_FEW, hatch="", edgecolor="white", linewidth=0)
-        b2 = ax.bar(x,     infB,  w, label=f"Factor B — {FACTOR_B_LABEL}",
-                    color=C_360_FEW, hatch="///", edgecolor="white", linewidth=0)
+        # Mantendo as cores e o layout corrigido
+        b1 = ax.bar(x - w, infA,  w, label=f"Factor A: {FACTOR_A_LABEL}",
+                    color=C_135_FEW, edgecolor="white", linewidth=0.5)
+        b2 = ax.bar(x,     infB,  w, label=f"Factor B: {FACTOR_B_LABEL}",
+                    color=C_360_FEW, hatch="///", edgecolor="white", linewidth=0.5)
         b3 = ax.bar(x + w, infAB, w, label="Interaction AB",
-                    color=C_135_MANY, hatch="...", edgecolor="white", linewidth=0)
+                    color=C_135_MANY, hatch="...", edgecolor="white", linewidth=0.5)
 
+        # ── ATUALIZAÇÃO DE LEGIBILIDADE COM BBOX ──────────────────────────────
+        # Ativamos with_bbox=True para colocar um fundo branco atrás de cada número.
+        # Definimos color_inside="black" para que o texto preto contraste com a bbox branca.
         for bars in [b1, b2, b3]:
-            add_bar_labels(ax, bars, fmt="{:.2f}%")
+            add_bar_labels(ax, bars, fmt="{:.2f}%", threshold_frac=0.6, 
+                           color_inside="black", with_bbox=True)
+        # ───────────────────────────────────────────────────────────────────
 
         ax.set_xticks(x)
         ax.set_xticklabels(responses, fontsize=SMALL_FONT)
         ax.set_ylabel("Contribution (%)")
-        ax.set_ylim(0, 118)
-        ax.set_title(f"Factor Influence on Response Variables — {gpu}",
-                     fontweight="bold")
-        ax.legend(loc="upper right", frameon=True, ncol=3)
+        ax.set_ylim(0, 120) 
+        
+        ax.set_title(f"Factor Influence on Response Variables — {gpu}", 
+                     fontweight="bold", pad=35) 
+
+        # Legenda no topo, centralizada e fora do eixo
+        ax.legend(loc="upper center", bbox_to_anchor=(0.5, 1.12),
+                  frameon=True, ncol=3, fontsize=SMALL_FONT - 2)
+        
         save(fig, f"fig03_influence_{safe_name(gpu)}.pdf")
 
 
 # ══════════════════════════════════════════════════════════════════
-# FIGURE 4 — Cross-GPU Influence Comparison (per response variable)
+# FIGURE 4 — Cross-GPU Influence Comparison (FIXED)
 # ══════════════════════════════════════════════════════════════════
 print("[Fig 4] Cross-GPU Factor Influence …")
 
@@ -482,30 +540,41 @@ if not df_fact.empty:
         sub = df_fact[df_fact.response == resp]
         if sub.empty:
             continue
+            
         gpus_here = sub["gpu"].tolist()
-        fig, ax = plt.subplots(figsize=(max(7, len(gpus_here) * 3), 5.2))
+        # Increased height and adjusted width logic for clarity
+        fig, ax = plt.subplots(figsize=(max(8, len(gpus_here) * 3), 6))
         x = np.arange(len(gpus_here))
         w = 0.26
 
         b1 = ax.bar(x - w, sub["infA"].values  * 100, w,
-                    label=f"Factor A — {FACTOR_A_LABEL}",
-                    color=C_135_FEW,  hatch="",    edgecolor="white", linewidth=0)
+                    label=f"Factor A: {FACTOR_A_LABEL}",
+                    color=C_135_FEW,  hatch="",    edgecolor="white", linewidth=0.5)
         b2 = ax.bar(x,     sub["infB"].values  * 100, w,
-                    label=f"Factor B — {FACTOR_B_LABEL}",
-                    color=C_360_FEW,  hatch="///", edgecolor="white", linewidth=0)
+                    label=f"Factor B: {FACTOR_B_LABEL}",
+                    color=C_360_FEW,  hatch="///", edgecolor="white", linewidth=0.5)
         b3 = ax.bar(x + w, sub["infAB"].values * 100, w,
                     label="Interaction AB",
-                    color=C_135_MANY, hatch="...", edgecolor="white", linewidth=0)
+                    color=C_135_MANY, hatch="...", edgecolor="white", linewidth=0.5)
 
+        # ── LEGIBILITY WITH BBOX ──
+        # Same logic: white background boxes for all numbers
         for bars in [b1, b2, b3]:
-            add_bar_labels(ax, bars, fmt="{:.2f}%")
+            add_bar_labels(ax, bars, fmt="{:.2f}%", threshold_frac=0.6, 
+                           color_inside="black", with_bbox=True)
 
         ax.set_xticks(x)
         ax.set_xticklabels(gpus_here, fontsize=SMALL_FONT)
         ax.set_ylabel("Contribution (%)")
-        ax.set_ylim(0, 118)
-        ax.set_title(f"Factor Influence Across GPUs — {resp}", fontweight="bold")
-        ax.legend(loc="upper right", frameon=True, ncol=3)
+        ax.set_ylim(0, 125) # Extra headroom for the labels and legend
+        
+        ax.set_title(f"Factor Influence Across GPUs — {resp}", 
+                     fontweight="bold", pad=35)
+
+        # Legend moved to top center to match Figure 3
+        ax.legend(loc="upper center", bbox_to_anchor=(0.5, 1.12),
+                  frameon=True, ncol=3, fontsize=SMALL_FONT - 2)
+        
         save(fig, f"fig04_influence_xgpu_{safe_name(resp)}.pdf")
 
 
@@ -586,40 +655,57 @@ if not df_em.empty:
 
 
 # ══════════════════════════════════════════════════════════════════
-# FIGURE 8 — Trade-off: Top-1 Accuracy × Energy Consumed (per GPU)
+# FIGURE 8 — Trade-off: Accuracy × Energy (CLEAN VERSION)
 # ══════════════════════════════════════════════════════════════════
-print("[Fig 8] Accuracy vs Energy Trade-off …")
+print("[Fig 8] Accuracy vs Energy Trade-off — Clean Version …")
 
 if not df_acc_all.empty and not df_em.empty:
-    fig, axes = plt.subplots(1, len(GPUS), figsize=(6 * len(GPUS), 5.5),
-                             sharey=True)
+    # Aumentamos um pouco a altura para acomodar a legenda inferior sem apertar
+    fig, axes = plt.subplots(1, len(GPUS), figsize=(6 * len(GPUS), 6.5), sharey=True)
     axes = [axes] if len(GPUS) == 1 else list(axes)
 
     for ax, gpu in zip(axes, GPUS):
         df_acc_gpu = df_acc_all[df_acc_all.gpu == gpu]
+        
         for (model, steps), color, marker in zip(CONFIGS_ORDER, CONFIG_COLORS, CONFIG_MARKERS):
             sub = df_acc_gpu[(df_acc_gpu.model == model) & (df_acc_gpu.steps == steps)]
             ene = em_val(gpu, model, steps, "energy_kwh")
+            
             if sub.empty or ene == 0:
                 continue
+                
             acc = sub["top1"].mean() * 100
-            label = cfg_label(model, steps)
-            ax.scatter(ene, acc, color=color, marker=marker,
-                       s=170, zorder=5, label=label)
-            ax.annotate(label.replace(" / ", "\n"),
-                        xy=(ene, acc),
-                        xytext=(7, 4), textcoords="offset points",
-                        fontsize=SMALL_FONT - 3, color=color)
+            
+            # Plot apenas do símbolo (sem texto)
+            # Adicionamos uma borda branca (edgecolor) para destacar pontos sobrepostos
+            ax.scatter(ene, acc, color=color, marker=marker, s=250, 
+                       zorder=5, edgecolor='white', linewidth=1.5)
 
-        ax.set_xlabel("Energy Consumed (kWh)")
+        ax.set_xlabel("Energy Consumed (kWh)", labelpad=12)
         if ax is axes[0]:
-            ax.set_ylabel("Top-1 Accuracy (%)")
-        ax.set_title(gpu, fontweight="bold")
-        ax.legend(loc="lower right", frameon=True, fontsize=SMALL_FONT - 2)
+            ax.set_ylabel("Top-1 Accuracy (%)", labelpad=12)
+        ax.set_title(f"GPU: {gpu}", fontweight="bold", pad=15)
+        ax.grid(True, linestyle='--', alpha=0.6)
 
-    fig.suptitle("Trade-off: Top-1 Accuracy vs. Energy Consumed",
-                 fontweight="bold", y=1.02)
-    save(fig, "fig08_accuracy_vs_energy.pdf")
+    fig.suptitle("Trade-off: Top-1 Accuracy vs. Energy Consumed", 
+                 fontweight="bold", y=0.98, fontsize=TITLE_FONT)
+    
+    # Criando a legenda global na parte inferior
+    from matplotlib.lines import Line2D
+    legend_elements = [
+        Line2D([0], [0], marker=m, color='w', label=cfg_label(mod, stp),
+               markerfacecolor=c, markersize=12, markeredgecolor='none')
+        for (mod, stp), c, m in zip(CONFIGS_ORDER, CONFIG_COLORS, CONFIG_MARKERS)
+    ]
+    
+    # ncol=4 coloca todas as opções em uma única linha horizontal
+    fig.legend(handles=legend_elements, loc="lower center", 
+               bbox_to_anchor=(0.5, 0.02), ncol=4, frameon=True, 
+               fontsize=SMALL_FONT - 1, borderpad=0.8)
+
+    # Ajusta o layout para que o título e a legenda não cortem
+    plt.tight_layout(rect=[0, 0.08, 1, 0.95])
+    save(fig, "fig08_accuracy_vs_energy.pdf", tight=False)
 
 
 # ══════════════════════════════════════════════════════════════════
@@ -670,7 +756,7 @@ if not df_acc_all.empty:
 
 
 # ══════════════════════════════════════════════════════════════════
-# FIGURE 10 — F1-Score Profile (all GPUs)
+# FIGURE 10 — F1-Score Profile (GLOBAL LEGEND REFINED)
 # ══════════════════════════════════════════════════════════════════
 print("[Fig 10] F1-Score Profile …")
 
@@ -679,10 +765,10 @@ if not df_f1_all.empty:
                if c not in ("gpu", "model", "steps", "label", "round", "k")]
 
     if f1_cols:
-        fig, axes = plt.subplots(1, len(GPUS), figsize=(6 * len(GPUS), 5.5),
-                                 sharey=True)
+        # Aumentamos a altura levemente para acomodar a legenda inferior
+        fig, axes = plt.subplots(1, len(GPUS), figsize=(6 * len(GPUS), 6), sharey=True)
         axes = [axes] if len(GPUS) == 1 else list(axes)
-        pal  = [C_135_FEW, C_360_FEW, C_135_MANY, C_360_MANY, CGRAY]
+        pal = [C_135_FEW, C_360_FEW, C_135_MANY, C_360_MANY, CGRAY]
 
         for ax, gpu in zip(axes, GPUS):
             df_f1_gpu = df_f1_all[df_f1_all.gpu == gpu]
@@ -691,91 +777,120 @@ if not df_f1_all.empty:
                 continue
 
             ww = 0.65 / len(f1_cols)
-            x  = np.arange(len(CONFIGS_ORDER))
+            x = np.arange(len(CONFIGS_ORDER))
 
             for i, col in enumerate(f1_cols):
                 vals = []
                 for model, steps in CONFIGS_ORDER:
                     sub = df_f1_gpu[(df_f1_gpu.model == model) & (df_f1_gpu.steps == steps)]
                     vals.append(sub[col].mean() * 100 if len(sub) else 0)
+                
                 offset = (i - (len(f1_cols) - 1) / 2) * ww
                 ax.bar(x + offset, vals, ww, label=col.upper(),
                        color=pal[i % len(pal)], hatch=HATCHES[i % len(HATCHES)],
-                       edgecolor="white", linewidth=0)
+                       edgecolor="white", linewidth=0.5)
 
             ax.set_xticks(x)
             ax.set_xticklabels([cfg_label(m, s) for m, s in CONFIGS_ORDER],
                                fontsize=SMALL_FONT - 2, rotation=15, ha="right")
             if ax is axes[0]:
-                ax.set_ylabel("F1-Score (%)")
-            ax.set_title(gpu, fontweight="bold")
-            ax.legend(frameon=True, ncol=len(f1_cols),
-                      fontsize=SMALL_FONT - 2)
+                ax.set_ylabel("F1-Score (%)", labelpad=10)
+            ax.set_title(f"GPU: {gpu}", fontweight="bold", pad=15)
 
-        fig.suptitle("F1-Score per GPU and Configuration",
-                     fontweight="bold", y=1.02)
-        save(fig, "fig10_f1_score_profile.pdf")
+        fig.suptitle("F1-Score, Precision and Recall per GPU and Configuration",
+                     fontweight="bold", y=0.98, fontsize=TITLE_FONT)
+        
+        # ── LEGENDA GLOBAL INFERIOR ──
+        handles, labels = axes[0].get_legend_handles_labels()
+        fig.legend(handles, labels, loc="lower center", 
+                   bbox_to_anchor=(0.5, 0.02), ncol=len(f1_cols), 
+                   frameon=True, fontsize=SMALL_FONT - 1)
+
+        # Ajuste para evitar que a legenda e os rótulos do eixo X se sobreponham
+        plt.tight_layout(rect=[0, 0.1, 1, 0.95])
+        save(fig, "fig10_f1_score_profile.pdf", tight=False)
 
 
 # ══════════════════════════════════════════════════════════════════
-# FIGURE 11 — Factorial Heatmap (infA / infB / infAB) per GPU
+# FIGURE 11 — Factorial Heatmap (RESTORED & FIXED)
 # ══════════════════════════════════════════════════════════════════
-print("[Fig 11] Factorial Heatmap …")
+print("[Fig 11] Factorial Heatmap — Restoring data …")
 
 if not df_fact.empty:
-    metric_cols  = ["infA",  "infB",  "infAB"]
+    metric_cols = ["infA", "infB", "infAB"]
     metric_xlbls = [
-        f"Factor A\n({FACTOR_A_LABEL})",
-        f"Factor B\n({FACTOR_B_LABEL})",
-        "Interaction\nAB",
+        "Factor A\n(Model Size)",
+        "Factor B\n(Optim. Steps)",
+        "Interaction\nAB"
     ]
+    
     all_responses = df_fact["response"].unique().tolist()
-    gpus_w_data   = df_fact["gpu"].unique().tolist()
-    n_gpus        = len(gpus_w_data)
+    gpus_w_data = df_fact["gpu"].unique().tolist()
+    n_gpus = len(gpus_w_data)
 
     fig, axes = plt.subplots(
         1, n_gpus,
-        figsize=(5.5 * n_gpus, max(4, len(all_responses) * 1.6)),
-        sharey=True,
+        figsize=(6 * n_gpus, max(5, len(all_responses) * 1.5)),
+        sharey=True
     )
     axes = [axes] if n_gpus == 1 else list(axes)
     im_ref = None
 
     for ax, gpu in zip(axes, gpus_w_data):
+        # GARANTIA DE DADOS: Filtra e reconstrói a matriz explicitamente
         sub = df_fact[df_fact.gpu == gpu].set_index("response")
-        matrix = np.array([
-            [sub.loc[r, col] * 100 if r in sub.index else 0
-             for col in metric_cols]
-            for r in all_responses
-        ])
+        
+        matrix = []
+        for r in all_responses:
+            row = []
+            for col in metric_cols:
+                # Recupera o valor e converte para porcentagem
+                val = sub.loc[r, col] * 100 if r in sub.index else 0
+                row.append(val)
+            matrix.append(row)
+        
+        matrix = np.array(matrix)
+
+        # Plot com vmin/vmax fixos para garantir que as cores apareçam
         im = ax.imshow(matrix, cmap="Blues", aspect="auto", vmin=0, vmax=100)
         im_ref = im
 
+        # Formatação do Eixo X
         ax.set_xticks(range(len(metric_xlbls)))
-        ax.set_xticklabels(metric_xlbls, fontsize=SMALL_FONT)
+        ax.set_xticklabels(metric_xlbls, fontsize=SMALL_FONT - 2, ha="center")
+        
+        # Formatação do Eixo Y
         ax.set_yticks(range(len(all_responses)))
         if ax is axes[0]:
-            ax.set_yticklabels(all_responses, fontsize=SMALL_FONT)
+            ax.set_yticklabels(all_responses, fontsize=SMALL_FONT - 1)
         else:
             ax.set_yticklabels([])
-        ax.set_title(gpu, fontweight="bold")
+
+        ax.set_title(f"GPU: {gpu}", fontweight="bold", pad=20)
+        
+        # Remove molduras e grades que podem cobrir o heatmap
         ax.spines[:].set_visible(False)
         ax.grid(False)
 
-        for i, r in enumerate(all_responses):
+        # Adição dos Textos (Valores) sobre as células
+        for i in range(len(all_responses)):
             for j in range(len(metric_xlbls)):
                 val = matrix[i, j]
-                tc  = "white" if val > 55 else "#222"
+                # Cor do texto dinâmica para contraste
+                text_col = "white" if val > 50 else "black"
                 ax.text(j, i, f"{val:.1f}%", ha="center", va="center",
-                        fontsize=BASE_FONT - 1, color=tc, fontweight="bold")
+                        fontsize=BASE_FONT - 1, color=text_col, fontweight="bold")
 
+    # Barra de Cores Global
     if im_ref is not None:
-        cbar = fig.colorbar(im_ref, ax=axes, fraction=0.03, pad=0.04)
+        fig.subplots_adjust(right=0.88)
+        cbar_ax = fig.add_axes([0.90, 0.25, 0.02, 0.5]) # [left, bottom, width, height]
+        cbar = fig.colorbar(im_ref, cax=cbar_ax)
         cbar.set_label("Influence (%)", fontsize=SMALL_FONT)
-        cbar.ax.tick_params(labelsize=SMALL_FONT - 1)
 
-    fig.suptitle("Factorial Analysis — Factor Influence Heatmap",
-                 fontweight="bold", y=1.02)
+    fig.suptitle("Factorial Analysis — Factor Influence Heatmap", 
+                 fontweight="bold", y=0.98, fontsize=TITLE_FONT)
+
     save(fig, "fig11_factorial_heatmap.pdf", tight=False)
 
 
