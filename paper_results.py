@@ -595,7 +595,10 @@ if not df_em.empty:
         vals  = [em_val(gpu, m, s, "gpu_power_w") for m, s in CONFIGS_ORDER]
         bars  = ax.bar(x + offset, vals, w, label=gpu,
                        color=GPU_COLORS[gpu], edgecolor="white", linewidth=0)
-        add_bar_labels(ax, bars, fmt="{:.1f}", fontsize=SMALL_FONT - 2)
+        
+        # INCREASED FONT SIZE AND ADDED BBOX FOR CONTRAST
+        add_bar_labels(ax, bars, fmt="{:.1f}", fontsize=SMALL_FONT, 
+                       color_inside="black", with_bbox=True)
 
     ax.set_xticks(x)
     ax.set_xticklabels([cfg_label(m, s) for m, s in CONFIGS_ORDER],
@@ -619,7 +622,10 @@ if not df_em.empty:
         vals = [em_val(gpu, m, s, "energy_kwh") for m, s in CONFIGS_ORDER]
         bars = ax.bar(x + offset, vals, w, label=gpu,
                       color=GPU_COLORS[gpu], edgecolor="white", linewidth=0)
-        add_bar_labels(ax, bars, fmt="{:.4f}", fontsize=SMALL_FONT - 3)
+        
+        # INCREASED FONT SIZE AND ADDED BBOX FOR CONTRAST
+        add_bar_labels(ax, bars, fmt="{:.4f}", fontsize=SMALL_FONT, 
+                       color_inside="black", with_bbox=True)
 
     ax.set_xticks(x)
     ax.set_xticklabels([cfg_label(m, s) for m, s in CONFIGS_ORDER],
@@ -643,7 +649,10 @@ if not df_em.empty:
         vals = [em_val(gpu, m, s, "emissions_kgco2") for m, s in CONFIGS_ORDER]
         bars = ax.bar(x + offset, vals, w, label=gpu,
                       color=GPU_COLORS[gpu], edgecolor="white", linewidth=0)
-        add_bar_labels(ax, bars, fmt="{:.5f}", fontsize=SMALL_FONT - 3)
+        
+        # INCREASED FONT SIZE AND ADDED BBOX FOR CONTRAST
+        add_bar_labels(ax, bars, fmt="{:.5f}", fontsize=SMALL_FONT, 
+                       color_inside="black", with_bbox=True)
 
     ax.set_xticks(x)
     ax.set_xticklabels([cfg_label(m, s) for m, s in CONFIGS_ORDER],
